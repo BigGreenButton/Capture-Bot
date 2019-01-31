@@ -4,7 +4,8 @@ A bot for organizing and playing a game of capture through a discord server.
 Uses https://github.com/DV8FromTheWorld/JDA!
 
 Hello! Welcome to capture bot!
-It's a bot designed to,,,, play capture. 
+It's a bot designed to,,,, play capture. What is that?
+Well it's similar to assassin. Rules here: https://pastebin.com/5ExajAUU
 
 This bot works by manipulating roles in accordance with commands and a gamestate.
 It does require:
