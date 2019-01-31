@@ -1,4 +1,4 @@
-# CaptureBotGit
+# CaptureBot
 A bot for organizing and playing a game of capture through a discord server.
 
 Uses https://github.com/DV8FromTheWorld/JDA!
