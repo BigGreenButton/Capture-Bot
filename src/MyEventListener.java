@@ -109,6 +109,16 @@ public class MyEventListener extends ListenerAdapter {
 			
 			
 		}
+		
+		else if (msg.startsWith("!rules!")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(!channel.getName().equals("player-bot-commands") || !channel.getName().equals("player-bot-commands") 
+					|| message.getMember().getRoles().contains(probation)) {
+				return;
+			}
+			
+			channel.sendMessage("https://pastebin.com/5ExajAUU").queue();
+		}
 
 		//------------------------------------------------------------------------------------------------
 		else if (msg.startsWith("!endgame")) {       	
@@ -293,10 +303,10 @@ public class MyEventListener extends ListenerAdapter {
 			for (int i = 0; i < playershift.size(); i++) {
 				if(i != playershift.size()-1) 
 					hostsee.sendMessage("**" + playershift.get(i).getEffectiveName() + "** has "
-							+ "" + players.get(i).getEffectiveName() + "'s card.").queue();
+							+ "" + players.get(i).getEffectiveName() + "'s second clothespin.").queue();
 				else
 					hostsee.sendMessage("**" + playershift.get(i).getEffectiveName() + "** has "
-							+ "" + players.get(i).getEffectiveName() + "'s card.").queue();
+							+ "" + players.get(i).getEffectiveName() + "'s second clothespin.").queue();
 			}
 		}
 		
