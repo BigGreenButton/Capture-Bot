@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] arguments) throws Exception
 	{
 		FileEditor fileditor  = new FileEditor();
-		fileditor.setgamestate("gameover"); //remove! TODO
+		fileditor.setgamestate("gameover"); 
         //fileditor.clearfile("players.txt");
 		//System.out.println(fileditor.readplayers());
 		JDA api = new JDABuilder("NTM0ODg3NTY3NzQ1ODc1OTcw.DyAJcQ.Itx44iKqBZV6-Sq_WDmZqyXPv0s").build();
