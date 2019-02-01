@@ -254,7 +254,7 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 
-			fileditor.setgamestate("distribution");
+			
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hostsee = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 
@@ -265,6 +265,12 @@ public class MyEventListener extends ListenerAdapter {
 			for(Member member : guild.getMembersWithRoles(alive)) {
 				names.add(member.getEffectiveName());
 			}
+			
+			if(names.size() < 3) { 
+				channel.sendMessage("Please only use this command if at least 3 people are playing.").queue();
+				return;
+			}
+			fileditor.setgamestate("distribution"); //only changes stuff after checking
 			
 			Collections.shuffle(names);
 
@@ -297,7 +303,8 @@ public class MyEventListener extends ListenerAdapter {
 			//it's size-1 because if you offset by the size there it loops back to when you started.
 
 			for (int i = 0; i < n; i++) { //offsets by n.
-				playershift = offset(playershift);
+				playershift.add(0, playershift.get(playershift.size()-1));
+				playershift.remove(playershift.size()-1);
 			}
 
 			for (int i = 0; i < playershift.size(); i++) {
@@ -332,9 +339,17 @@ public class MyEventListener extends ListenerAdapter {
 		else if(msg.startsWith("!capture")) {
 			Role alive = guild.getRolesByName("capture", true).get(0);
 			Role probation = guild.getRolesByName("botjail", true).get(0);
-
+			
+			Boolean isbot = false;
+			List<User> wait = message.getMentionedUsers();
+			for(User user : wait) {
+				if(user.isBot())
+					isbot = true;
+			}
+			
 			if(!channel.getName().equals("player-bot-commands") || !fileditor.getgamestate().equals("inprogress") 
-					|| !message.getMember().getRoles().contains(alive) || message.getMember().getRoles().contains(probation)) {
+					|| !message.getMember().getRoles().contains(alive) || message.getMember().getRoles().contains(probation)
+					|| isbot) {
 				return;
 			} 
 			
@@ -480,12 +495,6 @@ public class MyEventListener extends ListenerAdapter {
 		
 
 
-	}
-
-	public static List<Member> offset (List<Member> playershift){
-		playershift.add(0, playershift.get(playershift.size()-1));
-		playershift.remove(playershift.size()-1);
-		return playershift;
 	}
 
 
