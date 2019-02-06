@@ -70,6 +70,7 @@ public class MyEventListener extends ListenerAdapter {
 								+ "Here's a simple list of your current avaiable commands during this setup time:\n"
 								+ "**!ping** : Pong!\n"
 								+ "**!hi** : Say hello!\n"
+								+ "**!rules** : Prints the rules!\n"
 								+ "**!listplayers** : Displays list of all current players.\n"
 								+ "**!addme** : Adds you to the list of players ready for the next game.\n"
 								+ "**!removeme** : Removes you from that list.\n"
@@ -80,6 +81,7 @@ public class MyEventListener extends ListenerAdapter {
 								+ "Here's a simple list of your current avaiable commands during this distribution time:\n"
 								+ "**!ping** : Pong!\n"
 								+ "**!hi** : Say hello!\n"
+								+ "**!rules** : Prints the rules!\n"
 								+ "**!listplayers** : Displays list of all current players.\n"
 								+ "").queue();
 					}
@@ -88,6 +90,7 @@ public class MyEventListener extends ListenerAdapter {
 								+ "Here's a simple list of your current avaiable commands during game time:\n"
 								+ "**!ping** : Pong!\n"
 								+ "**!hi** : Say hello!\n"
+								+ "**!rules** : Prints the rules!\n"
 								+ "**!listplayers** : Displays list of all **alive** players.\n"
 								+ "**!capture @Username** : Report a capture! It will be confirmed by the host later, but presumed accurate").queue();
 					}
@@ -96,6 +99,7 @@ public class MyEventListener extends ListenerAdapter {
 								+ "Here's a simple list of your current avaiable commands during this time with no active game:\n"
 								+ "**!ping** : Pong!\n"
 								+ "**!hi** : Say hello!\n"
+								+ "**!rules** : Prints the rules!\n"
 								+ "").queue();
 					}
 				}
@@ -110,7 +114,7 @@ public class MyEventListener extends ListenerAdapter {
 			
 		}
 		
-		else if (msg.startsWith("!rules!")) {
+		else if (msg.startsWith("!rules")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(!channel.getName().equals("player-bot-commands") || !channel.getName().equals("player-bot-commands") 
 					|| message.getMember().getRoles().contains(probation)) {
@@ -173,7 +177,7 @@ public class MyEventListener extends ListenerAdapter {
 				TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 				announce.sendMessage("@everyone\nWe are setting up the new game!\nType \"!addme\" into #player-bot-commands to join!"
 						+ "\n(You can also type \"!removeme\" to remove your name from the list and \"!listplayers\" to see "
-						+ "a list of the current players.)").queue();
+						+ "a list of the current players.) [also try \"!help\"]").queue();
 				
 				Role alive = guild.getRolesByName("capture", true).get(0);
 				Role dead = guild.getRolesByName("deadcapture", true).get(0);
