@@ -35,14 +35,16 @@ Game states can be one of four:
 
 As a host you will need to flip through these states with: 
  - !endgame (will clear all related roles)
- - !resetgame (will clear all related roles)
+ - !resetgame
  - !begindistribution 
- - !beginround (listed in the order of normal game)
+ - !beginround 
+(all listed in the order of normal game)
  
 !endgame can be called at anytime, but the others can only be called in order.
-IF YOU ARE INITIALIZING THE BOT ON A SERVER:
-It begins in the "gameover" so start with "!resetgame".
 
+IF YOU ARE INITIALIZING THE BOT ON A SERVER: It begins in the "gameover" so start with "!resetgame".
+
+!clearroles will clear all related roles.
 
 The other host-only bot commands are !styx and !save.
 When someone is !capture(d), they are moved from capture to capturelimbo.
@@ -53,6 +55,7 @@ Other than that you won't have to use the bot commands, just normal modding thin
 Moving roles around, handing items out, and oh wait one thing.
 There is a role called "botjail" which basically acts as bot probation.
 If someone is abusing the bot, you can put them in botjail to restrict their ability to use commands (i.e do things without your ability to change roles)
+
 DO WATCH OUT, THERE ARE NO PROBATION NOR ROLE RESTRICTIONS ON HOST BOT COMMANDS.
 THE RESTRICTION MUST BE SET UP IN THE HOST BOT COMMAND CHANNEL.
 DO NOT ALLOW NON HOSTS TO READ OR WRITE IN THAT CHANNEL.
@@ -63,5 +66,7 @@ I spent a lot of time on it and im hoping it doesn't break.
 Send me a message and I'll fix it but hopefully it will not matter.
 
 Past that, I wish you luck on your hosting endeavors.
+
 Regards,
+
 Aylea

@@ -106,7 +106,8 @@ public class MyEventListener extends ListenerAdapter {
 				
 				else if(channel.getName().equals("host-bot-commands")) {
 					channel.sendMessage("Hello host. I'm a bot made for playing capture!\n"
-							+ "If you would like a basic overview of how this bot works, click here: https://pastebin.com/feqsaZKY").queue();
+							+ "If you would like a basic overview of how this bot works,\n"
+							+ "click here and read the readme: https://github.com/BigGreenButton/Capture-Bot").queue();
 				}
 			}
 			
@@ -126,6 +127,10 @@ public class MyEventListener extends ListenerAdapter {
 
 		//------------------------------------------------------------------------------------------------
 		else if (msg.startsWith("!endgame")) {       	
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) {
 				channel.sendMessage("You are not authorized to use this command.").queue();
 				return;
@@ -166,8 +171,36 @@ public class MyEventListener extends ListenerAdapter {
 
 
 		}
-
+		
+		else if (msg.startsWith("!clearroles")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
+			if(!channel.getName().equals("host-bot-commands")) { 
+				channel.sendMessage("You are not authorized to use this command.").queue();
+				return;
+			}
+			Role alive = guild.getRolesByName("capture", true).get(0);
+			Role dead = guild.getRolesByName("deadcapture", true).get(0);
+			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
+			List<Member> members = guild.getMembers();
+			
+			for (Member member : members) {
+				if(member.getRoles().contains(alive))
+					guild.getController().removeRolesFromMember(member, alive).complete();
+				if(member.getRoles().contains(dead))
+					guild.getController().removeRolesFromMember(member, dead).complete();
+				if(member.getRoles().contains(limbo))
+					guild.getController().removeRolesFromMember(member, limbo).complete();
+			}
+		}
+		
 		else if (msg.startsWith("!resetgame")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) { 
 				channel.sendMessage("You are not authorized to use this command.").queue();
 				return;
@@ -179,7 +212,11 @@ public class MyEventListener extends ListenerAdapter {
 						+ "\n(You can also type \"!removeme\" to remove your name from the list and \"!listplayers\" to see "
 						+ "a list of the current players.) [also try \"!help\"]").queue();
 				
-				Role alive = guild.getRolesByName("capture", true).get(0);
+				
+				//below removes all related roles.
+				//also done by !endgame.
+				
+				/*Role alive = guild.getRolesByName("capture", true).get(0);
 				Role dead = guild.getRolesByName("deadcapture", true).get(0);
 				Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 				List<Member> members = guild.getMembers();
@@ -191,12 +228,7 @@ public class MyEventListener extends ListenerAdapter {
 						guild.getController().removeRolesFromMember(member, dead).complete();
 					if(member.getRoles().contains(limbo))
 						guild.getController().removeRolesFromMember(member, limbo).complete();
-				}
-				/*
-				List<Role> alive = guild.getRolesByName("capture", true);
-				for(Member member : guild.getMembers()) {
-					guild.getController().addRolesToMember(member, alive).complete();
-				}*/ //only for testing
+				}*/
 				
 			}
 			else {
@@ -249,6 +281,10 @@ public class MyEventListener extends ListenerAdapter {
 		}
 
 		else if (msg.startsWith("!begindistribution")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) {
 				channel.sendMessage("You are not authorized to use this command.").queue();
 				return;
@@ -322,6 +358,10 @@ public class MyEventListener extends ListenerAdapter {
 		}
 		
 		else if (msg.startsWith("!beginround")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) {
 				channel.sendMessage("You are not authorized to use this command.").queue();
 				return;
@@ -403,6 +443,10 @@ public class MyEventListener extends ListenerAdapter {
 		}
 		
 		else if (msg.startsWith("!styx")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) {
 				return;
 			}        	
@@ -413,7 +457,7 @@ public class MyEventListener extends ListenerAdapter {
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hbc = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			Role alive = guild.getRolesByName("capture", true).get(0);
-			Role probation = guild.getRolesByName("botjail", true).get(0);
+			//probation declared above
 			Role dead = guild.getRolesByName("deadcapture", true).get(0);
 			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 			Role hosts = guild.getRolesByName("capture host", true).get(0);
@@ -454,6 +498,10 @@ public class MyEventListener extends ListenerAdapter {
 		}
 		
 		else if (msg.startsWith("!save")) {
+			Role probation = guild.getRolesByName("botjail", true).get(0);
+			if(message.getMember().getRoles().contains(probation)) {
+				return;
+			}
 			if(!channel.getName().equals("host-bot-commands")) {
 				return;
 			}        	
@@ -464,7 +512,7 @@ public class MyEventListener extends ListenerAdapter {
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hbc = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			Role alive = guild.getRolesByName("capture", true).get(0);
-			Role probation = guild.getRolesByName("botjail", true).get(0);
+			//probation declared above
 			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 			Role hosts = guild.getRolesByName("capture host", true).get(0);
 			Role winner = guild.getRolesByName("winner winner chicken dinner", true).get(0);
