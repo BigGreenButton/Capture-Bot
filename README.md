@@ -34,8 +34,8 @@ Game states can be one of four:
  - inprogress (when the game is, well, happening)
 
 As a host you will need to flip through these states with: 
- - !endgame 
- - !resetgame 
+ - !endgame (will clear all related roles)
+ - !resetgame (will clear all related roles)
  - !begindistribution 
  - !beginround (listed in the order of normal game)
  
