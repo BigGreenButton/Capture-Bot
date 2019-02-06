@@ -249,7 +249,7 @@ public class MyEventListener extends ListenerAdapter {
 			guild.getController().addRolesToMember(event.getMember(), alive).complete();
 
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);      	
-			announce.sendMessage(event.getAuthor().getName() + " joined the next game!").queue();
+			announce.sendMessage(event.getMember().getEffectiveName() + " joined the next game!").queue();
 		}
 
 		else if (msg.startsWith("!removeme")) {
@@ -261,7 +261,7 @@ public class MyEventListener extends ListenerAdapter {
 			guild.getController().removeRolesFromMember(event.getMember(), alive).complete();
 
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
-			announce.sendMessage(event.getAuthor().getName() + " left the next game!").queue();
+			announce.sendMessage(event.getMember().getEffectiveName() + " left the next game!").queue();
 		}
 
 		else if (msg.startsWith("!listplayers")) { //can be done at anytime except for endgame
