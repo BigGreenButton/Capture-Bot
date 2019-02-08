@@ -289,7 +289,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		else if (msg.startsWith("!listplayers")) { //can be done at anytime except for endgame
 			Role probation = guild.getRolesByName("botjail", true).get(0);
-			if(!channel.getName().equals("player-bot-commands") || !fileditor.getgamestate().equals("setup") || message.getMember().getRoles().contains(probation)) { 
+			if(!channel.getName().equals("player-bot-commands") || fileditor.getgamestate().equals("gameover") || message.getMember().getRoles().contains(probation)) { 
 				return;
 			}
 
