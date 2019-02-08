@@ -7,7 +7,7 @@ import java.io.*;
 public class FileEditor {
 	
 	public static void setgamestate(String state) {
-		if(state == "gameover" || state == "setup" || state == "distribution" || state == "inprogress") {
+		if(state == "gameover" || state == "setup" || state == "distribution" || state == "inprogress" || state == "blank") {
 			try{
 		         FileOutputStream fos= new FileOutputStream("gamestate.txt");
 		         ObjectOutputStream oos= new ObjectOutputStream(fos);

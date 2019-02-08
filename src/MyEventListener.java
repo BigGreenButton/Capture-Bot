@@ -33,12 +33,35 @@ public class MyEventListener extends ListenerAdapter {
 		String msg = message.getContentRaw(); 
 		MessageChannel channel = event.getChannel();
 		Guild guild = event.getGuild();
-
-
+		
+		if(msg.equals("!1") && fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
+			fileditor.setgamestate("gameover");
+		}
+		else if(msg.equals("!2")&& fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
+			fileditor.setgamestate("setup");
+		}
+		else if(msg.equals("!3")&& fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
+			fileditor.setgamestate("distribution");
+		}
+		else if(msg.equals("!4")&& fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
+			fileditor.setgamestate("inprogress");
+		}
+		
+		else if(fileditor.getgamestate().equals("blank")) {
+			TextChannel hostsee = guild.getTextChannelsByName("host-bot-commands", true).get(0);
+			hostsee.sendMessage("The gamestate has not been declared!\n"
+					+ "The modding nor setup can be declared without it\n"
+					+ "!1 sets it to gameover\n"
+					+ "!2 sets it to setup\n"
+					+ "!3 sets it to distribution\n"
+					+ "!4 sets it to inprogress\n"
+					+ "All of this is done quietly so don't worry about @-ing people").queue();
+			return;
+		}
 
 		// () is an atomic getter
 		// getContentDgetContentRawisplay() is a lazy getter which modifies the content for e.g. console view (strip discord formatting)
-		if (msg.equals("!ping"))
+		else if (msg.equals("!ping"))
 		{
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation))

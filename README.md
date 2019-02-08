@@ -27,7 +27,8 @@ While the bot messages will seem a little out of whack, everything will still fu
 If the bot breaks because you changed a role, I failed. 
 (the one exception being where there are only two people left. changing the role from alive to dead will not induce a winner message. in this case however you can just change them back to alive and capture them through the bot to induce it)
 
-Game states can be one of four:
+Game states can be one of five:
+ - blank (when you have just intialized the bot and need to set it to a gamestate)
  - gameover (when there is no game nor setup currently in progress)
  - setup (when people are deciding whether or not they would like to join the next round)
  - distribution (when the host [likely you] is handing out cards and clothespins physically)
@@ -42,7 +43,10 @@ As a host you will need to flip through these states with:
  
 !endgame can be called at anytime, but the others can only be called in order.
 
-IF YOU ARE INITIALIZING THE BOT ON A SERVER: It begins in the "gameover" so start with "!resetgame".
+IF YOU ARE INITIALIZING THE BOT ON A SERVER: It begins in the "blank" state.
+You will not be able to use any commands until you use !1 (gameover), !2 (setup), !3, !4 etc. to set the starting game state.
+If you do not have a game in progress, set it to gameover with !1.
+If you do, then this is an easy way to reset the bot without pinging people and confusing them.
 
 !clearroles will clear all related roles.
 
