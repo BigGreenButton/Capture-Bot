@@ -175,20 +175,7 @@ public class MyEventListener extends ListenerAdapter {
 						+ " as soon as possible!").queue();
 				fileditor.setgamestate("gameover");
 
-
-
-				List<Member> members = guild.getMembers();
-
-				//Note for this loop. You cannot remove two roles from the same member in one event listener cycle.
-				//Something about cache updates. Anyway, it doesnt matter because NOBODY should have two roles at once! hint hint.
-				for (Member member : members) {
-					if(member.getRoles().contains(alive))
-						guild.getController().removeRolesFromMember(member, alive).complete();
-					if(member.getRoles().contains(dead))
-						guild.getController().removeRolesFromMember(member, dead).complete();
-					if(member.getRoles().contains(limbo))
-						guild.getController().removeRolesFromMember(member, limbo).complete();
-				}
+				removeAllGameRoles(guild);
 
 			}
 
@@ -204,19 +191,7 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("You are not authorized to use this command.").queue();
 				return;
 			}
-			Role alive = guild.getRolesByName("capture", true).get(0);
-			Role dead = guild.getRolesByName("deadcapture", true).get(0);
-			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
-			List<Member> members = guild.getMembers();
-			
-			for (Member member : members) {
-				if(member.getRoles().contains(alive))
-					guild.getController().removeRolesFromMember(member, alive).complete();
-				if(member.getRoles().contains(dead))
-					guild.getController().removeRolesFromMember(member, dead).complete();
-				if(member.getRoles().contains(limbo))
-					guild.getController().removeRolesFromMember(member, limbo).complete();
-			}
+			removeAllGameRoles(guild);
 		}
 		
 		else if (msg.startsWith("!resetgame")) {
@@ -447,18 +422,7 @@ public class MyEventListener extends ListenerAdapter {
 				announce.sendMessage(member.getAsMention() + " CAPTURED by " + author.getAsMention()).queue();
 				announce.sendMessage(member.getAsMention() + " please relinquish your items to " + author.getAsMention() + " at the nearest opportunity.").queue();
 				announce.sendMessage("---").queue();
-				if(member.getRoles().contains(winner) && member.getRoles().contains(probation)) {
-					guild.getController().modifyMemberRoles(member, limbo, winner, probation).complete(); 
-				}
-				else if(member.getRoles().contains(winner)) {
-					guild.getController().modifyMemberRoles(member, limbo, winner).complete(); 
-				}
-				else if(member.getRoles().contains(probation)) {
-					guild.getController().modifyMemberRoles(member, limbo, probation).complete(); 
-				}
-				else {
-					guild.getController().modifyMemberRoles(member, limbo).complete(); 
-				}
+				changeMemberGameRolesTo(guild, member, limbo);
 				channel.sendMessage(member.getEffectiveName() + ", captured!").queue();
 				hbc.sendMessage(thehost.getAsMention() + ", " + member.getEffectiveName() + " has been alleged as captured. Please !styx or !save them asap.").queue();
 			}
@@ -495,18 +459,7 @@ public class MyEventListener extends ListenerAdapter {
 					hbc.sendMessage("This person is not in limbo.").queue();
 				}
 				else {
-					if(member.getRoles().contains(winner) && member.getRoles().contains(probation)) {
-						guild.getController().modifyMemberRoles(member, dead, winner, probation).complete(); 
-					}
-					else if(member.getRoles().contains(winner)) {
-						guild.getController().modifyMemberRoles(member, dead, winner).complete(); 
-					}
-					else if(member.getRoles().contains(probation)) {
-						guild.getController().modifyMemberRoles(member, dead, probation).complete(); 
-					}
-					else {
-						guild.getController().modifyMemberRoles(member, dead).complete(); 
-					}
+					changeMemberGameRolesTo(guild, member, dead);
 					hbc.sendMessage(member.getEffectiveName() + " has been succesfully styxed!").queue();
 					winnerexists = (guild.getMembersWithRoles(alive).size() == 1);
 				}
@@ -515,7 +468,8 @@ public class MyEventListener extends ListenerAdapter {
 			if(winnerexists) {
 				announce.sendMessage(alive.getAsMention() + ", " + dead.getAsMention() +", the round has ended!\n"
 						+ "The winner of this round is " + guild.getMembersWithRoles(alive).get(0).getAsMention() + ".").queue();
-				hbc.sendMessage(guild.getMembersWithRoles(hosts).get(0).getAsMention() + ", please end the game with !endgame ASAP!").queue();
+				hbc.sendMessage(guild.getMembersWithRoles(hosts).get(0).getAsMention() + ", The game has been ended automatically.").queue();
+				fileditor.setgamestate("gameover");
 				guild.getController().addRolesToMember(guild.getMembersWithRoles(alive).get(0), winner).complete();			
 			}
 		}
@@ -548,18 +502,7 @@ public class MyEventListener extends ListenerAdapter {
 					hbc.sendMessage("This person is not in limbo.").queue();
 				}
 				else {
-					if(member.getRoles().contains(winner) && member.getRoles().contains(probation)) {
-						guild.getController().modifyMemberRoles(member, alive, winner, probation).complete(); 
-					}
-					else if(member.getRoles().contains(winner)) {
-						guild.getController().modifyMemberRoles(member, alive, winner).complete(); 
-					}
-					else if(member.getRoles().contains(probation)) {
-						guild.getController().modifyMemberRoles(member, alive, probation).complete(); 
-					}
-					else {
-						guild.getController().modifyMemberRoles(member, alive).complete(); 
-					}
+					changeMemberGameRolesTo(guild, member, alive);
 					hbc.sendMessage(member.getEffectiveName() + " has been succesfully saved!").queue();
 					announce.sendMessage(alive.getAsMention() + ", the capture of " + member.getEffectiveName() + " has been deemed faulty.\nThey have been saved and "
 							+ "their captor should send the host, " + guild.getMembersWithRoles(hosts).get(0).getEffectiveName() + ", a dm immediately.").queue();
@@ -570,6 +513,31 @@ public class MyEventListener extends ListenerAdapter {
 		
 
 
+	}
+	
+	public static void removeAllGameRoles(Guild guild) {
+		//the goal is to get it recognize each role then only take the necessary oneas
+		List<Member> allpeople = guild.getMembers();
+		for(Member member : allpeople) {
+			List<Role> roles = member.getRoles();
+			for(Role role : roles) {
+				if(role.getName().equals("capture") || role.getName().equals("deadcapture") || role.getName().equals("limbocapture")) {
+					roles.remove(role);
+				}
+			}
+			guild.getController().modifyMemberRoles(member, roles);
+		}
+	}
+	public static void changeMemberGameRolesTo(Guild guild, Member target, Role change) {
+		//the goal is to get it recognize each role then only take the necessary oneas
+		List<Role> roles = target.getRoles();
+		for(Role role : roles) {
+			if(role.getName().equals("capture") || role.getName().equals("deadcapture") || role.getName().equals("limbocapture")) {
+				roles.remove(role);
+			}
+		}
+		roles.add(change);
+		guild.getController().modifyMemberRoles(target, roles);
 	}
 
 
