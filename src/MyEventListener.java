@@ -33,7 +33,7 @@ public class MyEventListener extends ListenerAdapter {
 		String msg = message.getContentRaw(); 
 		MessageChannel channel = event.getChannel();
 		Guild guild = event.getGuild();
-		
+
 		if(msg.equals("!1") && fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
 			fileditor.setgamestate("gameover");
 		}
@@ -46,7 +46,7 @@ public class MyEventListener extends ListenerAdapter {
 		else if(msg.equals("!4")&& fileditor.getgamestate().equals("blank") && channel.getName().equals("host-bot-commands")) {
 			fileditor.setgamestate("inprogress");
 		}
-		
+
 		else if(fileditor.getgamestate().equals("blank")) {
 			TextChannel hostsee = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			hostsee.sendMessage("The gamestate has not been declared!\n"
@@ -57,6 +57,16 @@ public class MyEventListener extends ListenerAdapter {
 					+ "!4 sets it to inprogress\n"
 					+ "All of this is done quietly so don't worry about @-ing people").queue();
 			return;
+		}
+
+		else if (msg.equals("!forceblankstate")) {
+			if(!channel.getName().equals("host-bot-commands")) {
+				channel.sendMessage("You are not authorized to use this command.").queue();
+				return;
+			}   
+			TextChannel hostsee = guild.getTextChannelsByName("host-bot-commands", true).get(0);
+			hostsee.sendMessage("Blank gamestate forced!").queue();
+			fileditor.setgamestate("blank");
 		}
 
 		// () is an atomic getter
@@ -75,7 +85,7 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			channel.sendMessage("Hi " + author.getName() + "!").queue();
 		}
-		
+
 
 		else if (msg.equals("!help")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
@@ -126,25 +136,25 @@ public class MyEventListener extends ListenerAdapter {
 								+ "").queue();
 					}
 				}
-				
+
 				else if(channel.getName().equals("host-bot-commands")) {
 					channel.sendMessage("Hello host. I'm a bot made for playing capture!\n"
 							+ "If you would like a basic overview of how this bot works,\n"
 							+ "click here and read the readme: https://github.com/BigGreenButton/Capture-Bot").queue();
 				}
 			}
-			
-			
-			
+
+
+
 		}
-		
+
 		else if (msg.startsWith("!rules")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(!channel.getName().equals("player-bot-commands") || !channel.getName().equals("player-bot-commands") 
 					|| message.getMember().getRoles().contains(probation)) {
 				return;
 			}
-			
+
 			channel.sendMessage("https://pastebin.com/5ExajAUU").queue();
 		}
 
@@ -181,7 +191,7 @@ public class MyEventListener extends ListenerAdapter {
 
 
 		}
-		
+
 		else if (msg.startsWith("!clearroles")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation)) {
@@ -193,7 +203,7 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			removeAllGameRoles(guild);
 		}
-		
+
 		else if (msg.startsWith("!resetgame")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation)) {
@@ -209,16 +219,16 @@ public class MyEventListener extends ListenerAdapter {
 				announce.sendMessage("@everyone\nWe are setting up the new game!\nType \"!addme\" into #player-bot-commands to join!"
 						+ "\n(You can also type \"!removeme\" to remove your name from the list and \"!listplayers\" to see "
 						+ "a list of the current players.) [also try \"!help\"]").queue();
-				
-				
+
+
 				//below removes all related roles.
 				//also done by !endgame.
-				
+
 				/*Role alive = guild.getRolesByName("capture", true).get(0);
 				Role dead = guild.getRolesByName("deadcapture", true).get(0);
 				Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 				List<Member> members = guild.getMembers();
-				
+
 				for (Member member : members) {
 					if(member.getRoles().contains(alive))
 						guild.getController().removeRolesFromMember(member, alive).complete();
@@ -227,21 +237,21 @@ public class MyEventListener extends ListenerAdapter {
 					if(member.getRoles().contains(limbo))
 						guild.getController().removeRolesFromMember(member, limbo).complete();
 				}*/
-				
+
 			}
 			else {
 				channel.sendMessage("You cannot reset this game yet. Please end it with !endgame.").queue();
 			}
 
 		}
-		
+
 		//first non host only command
 		else if (msg.startsWith("!addme")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(!channel.getName().equals("player-bot-commands") || !fileditor.getgamestate().equals("setup") || message.getMember().getRoles().contains(probation)) { 
 				return;
 			}
-			
+
 
 			List<Role> alive = guild.getRolesByName("capture", true);
 			guild.getController().addRolesToMember(event.getMember(), alive).complete();
@@ -292,31 +302,37 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 
-			
+
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hostsee = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 
 			Role alive = guild.getRolesByName("capture", true).get(0);
 			announce.sendMessage(alive.getAsMention() + ", the game will be starting soon!").queue();
+			//
 
 			List<String> names = new ArrayList<String>();
 			for(Member member : guild.getMembersWithRoles(alive)) {
-				names.add(member.getEffectiveName());
+				names.add(member.getUser().getId());
 			}
-			
+
+			//
 			if(names.size() < 3) { 
 				channel.sendMessage("Please only use this command if at least 3 people are playing.").queue();
 				return;
 			}
 			fileditor.setgamestate("distribution"); //only changes stuff after checking
-			
+			//
+
+
 			Collections.shuffle(names);
 
 			List<Member> players = new ArrayList<Member>();
-			for(String name : names) {
-				players.add(guild.getMembersByName(name, true).get(0));
+			for(String id : names) {
+				players.add(guild.getMemberById(id));
 			}
-			
+
+
+
 			for (int i = 0; i < players.size(); i++) {
 				if(i != players.size()-1) //normal
 					announce.sendMessage("**" + players.get(i).getEffectiveName() + "** has "
@@ -325,36 +341,62 @@ public class MyEventListener extends ListenerAdapter {
 					announce.sendMessage("**" + players.get(i).getEffectiveName() + "** has "
 							+ "" + players.get(0).getEffectiveName() + "'s clothespin.").queue();
 			}
+
+
 			announce.sendMessage("Please report to the host IRL to receive your items.").queue();
 
 			//TODO TEST BELOW TO SEE IF THE RANDOMIZIATION OF THE OFFSET WORKS
 
-			List<Member> playershift = new ArrayList<Member>();
+
+			ArrayList<String> choices = new ArrayList<String>(); 
+			ArrayList<String> choosers = new ArrayList<String>(); //equals and will equal names
+			//---
+			ArrayList<String> randchoices = new ArrayList<String>();
+			//you can reuse choosers here
+
 			for(String name : names) {
-				playershift.add(guild.getMembersByName(name, true).get(0));
+				choosers.add(name);
+				choices.add(name);
 			}
-			
+
 			Random rand = new Random();
-			int n = 2; //n is the offset value for the ring.
-			if(playershift.size() > 3)
-				n = rand.nextInt(playershift.size()-1) + 2;
-			//it's size-1 because if you offset by the size there it loops back to when you started.
+			int index;
+			boolean matchold = false;
 
-			for (int i = 0; i < n; i++) { //offsets by n.
-				playershift.add(0, playershift.get(playershift.size()-1));
-				playershift.remove(playershift.size()-1);
+			for (int i = 0; i < choosers.size(); i++) {
+				do{
+					index = rand.nextInt(choices.size());
+
+					//checks if matches previous revealed randoms
+					if(i != choosers.size()-1) //normal
+						matchold = choices.get(index).equals(choosers.get(i+1));
+					else //if last one
+						matchold = choices.get(index).equals(choosers.get(0));
+
+				}while(choosers.get(i).equals(choices.get(index)) || matchold);
+
+				randchoices.add(choices.get(index));
+				choices.remove(index);
 			}
 
-			for (int i = 0; i < playershift.size(); i++) {
-				if(i != playershift.size()-1) 
-					hostsee.sendMessage("**" + playershift.get(i).getEffectiveName() + "** has "
-							+ "" + players.get(i).getEffectiveName() + "'s second clothespin.").queue();
-				else
-					hostsee.sendMessage("**" + playershift.get(i).getEffectiveName() + "** has "
-							+ "" + players.get(i).getEffectiveName() + "'s second clothespin.").queue();
+
+			//TODO This is the problem child here.
+			//guild.getMemberById(name) returns null, and it's added to the things.
+			//the problem isnt with my code, it's how its connected to the jda.
+			List<Member> memberchoo = new ArrayList<Member>();
+			for(String name : names) {
+				memberchoo.add(guild.getMemberById(name));
+			}
+			List<Member> memberchoi = new ArrayList<Member>();
+			for(String name : randchoices) {
+				memberchoi.add(guild.getMemberById(name));
+			}
+
+			for (int i = 0; i < memberchoo.size(); i++) {
+				hostsee.sendMessage(memberchoo.get(i).getEffectiveName() + " has " + memberchoi.get(i).getEffectiveName() + "'s second clothespin." ).queue();
 			}
 		}
-		
+
 		else if (msg.startsWith("!beginround")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation)) {
@@ -368,39 +410,39 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("You aren't in the right gamestate for this command.").queue();
 				return;
 			}
-			
+
 			fileditor.setgamestate("inprogress");
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel pbc = guild.getTextChannelsByName("player-bot-commands", true).get(0);
 			Role alive = guild.getRolesByName("capture", true).get(0);
-			
+
 			announce.sendMessage(alive.getAsMention() + ", The game has begun!\nYou can now type \"**!capture @Username**\" in " + pbc.getAsMention() + " to log captures!").queue();
-			
+
 		}
-		
+
 		else if(msg.startsWith("!capture")) {
 			Role alive = guild.getRolesByName("capture", true).get(0);
 			Role probation = guild.getRolesByName("botjail", true).get(0);
-			
+
 			Boolean isbot = false;
 			List<User> wait = message.getMentionedUsers();
 			for(User user : wait) {
 				if(user.isBot())
 					isbot = true;
 			}
-			
+
 			if(!channel.getName().equals("player-bot-commands") || !fileditor.getgamestate().equals("inprogress") 
 					|| !message.getMember().getRoles().contains(alive) || message.getMember().getRoles().contains(probation)
 					|| isbot) {
 				return;
 			} 
-			
+
 			if(message.getMentionedMembers().contains(message.getMember())) {
 				channel.sendMessage("Why the hel- Look c'mon man why even try it.\nDid you think I wouldn't anticipate this?\n"
 						+ "I should put you in botjail lmao.").queue();
 				return;
 			}
-			
+
 			boolean isplaying = false;
 			//check if the captee is playing, loop over mentioned players. send msg "one or more are not playing, plz try again"
 			for (Member member : message.getMentionedMembers()) {
@@ -410,14 +452,14 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("One or more of your mentioned players are not alive or playing the game.\nPlease try again.").queue();
 				return;
 			}
-			
+
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hbc = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 			Role hosts = guild.getRolesByName("capture host", true).get(0);
 			Role winner = guild.getRolesByName("winner winner chicken dinner", true).get(0);
 			Member thehost = guild.getMembersWithRoles(hosts).get(0);
-			
+
 			for(Member member : message.getMentionedMembers()) {
 				announce.sendMessage(member.getAsMention() + " CAPTURED by " + author.getAsMention()).queue();
 				announce.sendMessage(member.getAsMention() + " please relinquish your items to " + author.getAsMention() + " at the nearest opportunity.").queue();
@@ -426,9 +468,9 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage(member.getEffectiveName() + ", captured!").queue();
 				hbc.sendMessage(thehost.getAsMention() + ", " + member.getEffectiveName() + " has been alleged as captured. Please !styx or !save them asap.").queue();
 			}
-			
+
 		}
-		
+
 		else if (msg.startsWith("!styx")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation)) {
@@ -440,7 +482,7 @@ public class MyEventListener extends ListenerAdapter {
 			if(!fileditor.getgamestate().equals("inprogress")) {
 				return;
 			}
-			
+
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hbc = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			Role alive = guild.getRolesByName("capture", true).get(0);
@@ -449,11 +491,11 @@ public class MyEventListener extends ListenerAdapter {
 			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 			Role hosts = guild.getRolesByName("capture host", true).get(0);
 			Role winner = guild.getRolesByName("winner winner chicken dinner", true).get(0);
-			
+
 			List<Member> awaiters = guild.getMembersWithRoles(limbo);
 			List<Member> mentioned = message.getMentionedMembers();
 			boolean winnerexists = false;
-			
+
 			for(Member member : mentioned) {
 				if(!awaiters.contains(member)) {
 					hbc.sendMessage("This person is not in limbo.").queue();
@@ -464,7 +506,7 @@ public class MyEventListener extends ListenerAdapter {
 					winnerexists = (guild.getMembersWithRoles(alive).size() == 1);
 				}
 			}
-			
+
 			if(winnerexists) {
 				announce.sendMessage(alive.getAsMention() + ", " + dead.getAsMention() +", the round has ended!\n"
 						+ "The winner of this round is " + guild.getMembersWithRoles(alive).get(0).getAsMention() + ".").queue();
@@ -473,7 +515,7 @@ public class MyEventListener extends ListenerAdapter {
 				guild.getController().addRolesToMember(guild.getMembersWithRoles(alive).get(0), winner).complete();			
 			}
 		}
-		
+
 		else if (msg.startsWith("!save")) {
 			Role probation = guild.getRolesByName("botjail", true).get(0);
 			if(message.getMember().getRoles().contains(probation)) {
@@ -485,7 +527,7 @@ public class MyEventListener extends ListenerAdapter {
 			if(!fileditor.getgamestate().equals("inprogress")) {
 				return;
 			}
-			
+
 			TextChannel announce = guild.getTextChannelsByName("bot-announcements", true).get(0);
 			TextChannel hbc = guild.getTextChannelsByName("host-bot-commands", true).get(0);
 			Role alive = guild.getRolesByName("capture", true).get(0);
@@ -493,10 +535,10 @@ public class MyEventListener extends ListenerAdapter {
 			Role limbo = guild.getRolesByName("limbocapture", true).get(0);
 			Role hosts = guild.getRolesByName("capture host", true).get(0);
 			Role winner = guild.getRolesByName("winner winner chicken dinner", true).get(0);
-			
+
 			List<Member> awaiters = guild.getMembersWithRoles(limbo);
 			List<Member> mentioned = message.getMentionedMembers();
-			
+
 			for(Member member : mentioned) {
 				if(!awaiters.contains(member)) {
 					hbc.sendMessage("This person is not in limbo.").queue();
@@ -507,37 +549,51 @@ public class MyEventListener extends ListenerAdapter {
 					announce.sendMessage(alive.getAsMention() + ", the capture of " + member.getEffectiveName() + " has been deemed faulty.\nThey have been saved and "
 							+ "their captor should send the host, " + guild.getMembersWithRoles(hosts).get(0).getEffectiveName() + ", a dm immediately.").queue();
 				}
-				
+
 			}
 		}
-		
+
 
 
 	}
-	
+
 	public static void removeAllGameRoles(Guild guild) {
 		//the goal is to get it recognize each role then only take the necessary oneas
-		List<Member> allpeople = guild.getMembers();
-		for(Member member : allpeople) {
-			List<Role> roles = member.getRoles();
-			for(Role role : roles) {
-				if(role.getName().equals("capture") || role.getName().equals("deadcapture") || role.getName().equals("limbocapture")) {
-					roles.remove(role);
+
+		List<Member> members = new ArrayList();
+		for(Member member : guild.getMembers()) {
+			if(!member.getUser().isBot()) {
+				members.add(member);
+			}
+		}
+		for(Member member : members) {
+			List<Role> roles = new ArrayList<Role>();
+			for(Role role : member.getRoles()) {
+				if(!role.getName().equals("capture") && !role.getName().equals("deadcapture") && !role.getName().equals("limbocapture")) {
+					roles.add(role);
 				}
 			}
-			guild.getController().modifyMemberRoles(member, roles);
+			if(roles.size() >= 0) {
+				guild.getController().modifyMemberRoles(member, roles).queue();
+			}
+			
+
 		}
 	}
 	public static void changeMemberGameRolesTo(Guild guild, Member target, Role change) {
 		//the goal is to get it recognize each role then only take the necessary oneas
-		List<Role> roles = target.getRoles();
-		for(Role role : roles) {
-			if(role.getName().equals("capture") || role.getName().equals("deadcapture") || role.getName().equals("limbocapture")) {
-				roles.remove(role);
+		if(target.getUser().isBot()) {
+			return;
+		}
+		
+		List<Role> roles = new ArrayList();
+		for(Role role : target.getRoles()) {
+			if(!role.getName().equals("capture") && !role.getName().equals("deadcapture") && !role.getName().equals("limbocapture")) {
+				roles.add(role);
 			}
 		}
 		roles.add(change);
-		guild.getController().modifyMemberRoles(target, roles);
+		guild.getController().modifyMemberRoles(target, roles).queue();
 	}
 
 
