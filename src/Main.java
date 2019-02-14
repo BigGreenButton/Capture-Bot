@@ -14,8 +14,8 @@ public class Main {
 		
 	public static void main(String[] arguments) throws Exception
 	{
-		//JDA api = new JDABuilder("NTM0ODg3NTY3NzQ1ODc1OTcw.DyAJcQ.Itx44iKqBZV6-Sq_WDmZqyXPv0s").build(); //NORMAL BOT
-		JDA api = new JDABuilder("NTQ1NjM1OTcwNzMzODM0Mjcw.D0ci6A.Q4Pj2IodHB0ys_TljftKr8CibVE").build(); //TESTING BOT
+		JDA api = new JDABuilder("NTM0ODg3NTY3NzQ1ODc1OTcw.DyAJcQ.Itx44iKqBZV6-Sq_WDmZqyXPv0s").build(); //NORMAL BOT
+		//JDA api = new JDABuilder("NTQ1NjM1OTcwNzMzODM0Mjcw.D0ci6A.Q4Pj2IodHB0ys_TljftKr8CibVE").build(); //TESTING BOT
 		api.awaitReady();
 		api.addEventListener(new MyEventListener());
 		
